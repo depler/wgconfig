@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "wireguard": {
+      "commandName": "Project",
+      "commandLineArgs": "--config 5"
+    }
+  }
+}
