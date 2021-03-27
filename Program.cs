@@ -56,7 +56,7 @@ namespace wgconfig
             return new KeyData(privateKey, publicKey, presharedKey);
         }
 
-        static string GetClientConfig(KeyData clientKey, string serverKey, int ip)
+        static string GetClientConfig(KeyData clientKey, string serverKey, string serverIp, string serverPort, int ip)
         {
             var sb = new StringBuilder();
 
@@ -68,21 +68,21 @@ namespace wgconfig
             sb.AppendLine("[Peer]");
             sb.AppendLine($"PublicKey = {serverKey}");
             sb.AppendLine($"PresharedKey = {clientKey.PresharedKey}");
-            sb.AppendLine("Endpoint = 35.185.116.201:51820");
+            sb.AppendLine($"Endpoint = {serverIp}:{serverPort}");
             sb.AppendLine("PersistentKeepalive = 25");
             sb.AppendLine("AllowedIPs = 10.8.0.0/24");
 
             return sb.ToString();
         }
 
-        static string GetServerConfig(string privateKey, KeyData[] clientKeys)
+        static string GetServerConfig(string privateKey, KeyData[] clientKeys, string port)
         {
             var sb = new StringBuilder();
 
             sb.AppendLine("[Interface]");
             sb.AppendLine($"PrivateKey = {privateKey}");
             sb.AppendLine($"Address = 10.8.0.1/24");
-            sb.AppendLine("ListenPort = 51820");
+            sb.AppendLine($"ListenPort = {port}");
             sb.AppendLine("PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE");
             sb.AppendLine("PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE");
 
@@ -109,7 +109,7 @@ namespace wgconfig
                 .Select(x => x.ToString()).OrderBy(x => x).ToArray();
 
             ipstotal1 = ips.Select(x => x + "/32").Aggregate((x, y) => x + "," + y);
-            ipstotal2 = ips.Select(x => $"route add {x} mask 255.255.255.255 0.0.0.0").Aggregate((x, y) => x + "\n" + y);
+            ipstotal2 = ips.Select(x => $"route add {x} mask 255.255.255.255 10.8.0.1").Aggregate((x, y) => x + "\n" + y);
         }
 
         static string SearchWireguard()
@@ -151,8 +151,8 @@ namespace wgconfig
                 if (args.Length == 0)
                 {
                     Console.WriteLine("Usage:");
+                    Console.WriteLine("--config <server_ip server_port clients_count>: generate wg config");
                     Console.WriteLine("--routes <stdin>: resolve hosts to IPs");
-                    Console.WriteLine("--config <number>: generate wg config");
                     Console.WriteLine("--wg <wg path override>");
                     Console.WriteLine("--folder <config folder override>");
                     return;
@@ -195,6 +195,9 @@ namespace wgconfig
                                 if (!Directory.Exists(configFolder))
                                     Directory.CreateDirectory(configFolder);
 
+                                var serverIp = args[++i];
+                                var serverPort = args[++i];
+
                                 int clients = int.Parse(args[++i]);
                                 if (clients > 254)
                                     throw new Exception("No more than 254 clients");
@@ -205,13 +208,13 @@ namespace wgconfig
 
                                 for (int j = 0; j < clientKeys.Length; j++)
                                 {
-                                    var configPath = Path.Combine(configFolder, $"client{j + 1}.conf");
-                                    var configData = GetClientConfig(clientKeys[j], serverKeys.PublicKey, j + 2);
+                                    var configPath = Path.Combine(configFolder, $"client{j + 1:D3}.conf");
+                                    var configData = GetClientConfig(clientKeys[j], serverKeys.PublicKey, serverIp, serverPort, j + 2);
                                     File.WriteAllText(configPath, configData, utf8);
                                 }
 
                                 var serverConfigPath = Path.Combine(configFolder, "server.conf");
-                                var serverConfigData = GetServerConfig(serverKeys.PrivateKey, clientKeys);
+                                var serverConfigData = GetServerConfig(serverKeys.PrivateKey, clientKeys, serverPort);
                                 File.WriteAllText(serverConfigPath, serverConfigData, utf8);
 
                                 break;
