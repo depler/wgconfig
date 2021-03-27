@@ -151,7 +151,7 @@ namespace wgconfig
                 if (args.Length == 0)
                 {
                     Console.WriteLine("Usage:");
-                    Console.WriteLine("--config <server_ip server_port clients_count>: generate wg config");
+                    Console.WriteLine("--config <server_ip> <server_port> <clients_count>: generate wg config");
                     Console.WriteLine("--routes <stdin>: resolve hosts to IPs");
                     Console.WriteLine("--wg <wg path override>");
                     Console.WriteLine("--folder <config folder override>");
