@@ -39,5 +39,14 @@ jobs:
       run: |
         rm -f ./wgconfig/wgconfig ./wgconfig/*.deps.json ./wgconfig/*.pdb
         zip -r release.zip ./wgconfig/
-
+    - name: Create release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{steps.get_version.outputs.projectVersion}}
+        release_name: v${{steps.get_version.outputs.projectVersion}}
+        draft: true
+        prerelease: false
     
