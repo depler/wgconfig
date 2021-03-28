@@ -24,12 +24,11 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal
     - name: Publish
-      run: dotnet publish --no-build --no-self-contained --configuration Release
+      run: dotnet publish --no-build --no-self-contained --output ./wgconfig --configuration Release
     - name: Pack
       run: |
-        mv ./bin/Release/net5.0/publish/ ./wgconfig/
-        rm -f ./wgconfig/wgconfig
-        rm -f ./wgconfig/*.deps.json
-        rm -f ./wgconfig/*.pdb
+        rm -f ./wgconfig/wgconfig ./wgconfig/*.deps.json ./wgconfig/*.pdb
         zip -r release.zip ./wgconfig/
         
+        
+    
