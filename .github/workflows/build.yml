@@ -23,16 +23,16 @@ jobs:
       run: dotnet build --no-restore --configuration Release
     - name: Test
       run: dotnet test --no-build --verbosity normal
-    - name: Bump versions
+    - name: Bump version
       uses: SiqiLu/dotnet-bump-version@master
       with:
-        version_files: ./wgconfig.csproj
+        version_files: wgconfig.csproj
         github_token: ${{ secrets.GITHUB_TOKEN }}
     - name: Get version
       id: get_version
-      uses: greenygh0st/net-proj-release-version@v1
+      uses: chiefnoir/gaction-version-getter@v1
       with:
-        PROJ_FILE: wgconfig.csproj
+        projectPath: wgconfig.csproj
     - name: Publish
       run: dotnet publish --no-build --no-self-contained --output ./wgconfig --configuration Release
     - name: Pack
