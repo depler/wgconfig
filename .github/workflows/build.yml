@@ -26,8 +26,13 @@ jobs:
     - name: Bump versions
       uses: SiqiLu/dotnet-bump-version@master
       with:
-        version_files: "**/*.csproj"
+        version_files: ./wgconfig.csproj
         github_token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Get version
+      id: get_version
+      uses: greenygh0st/net-proj-release-version@v1
+      with:
+        PROJ_FILE: ./wgconfig.csproj
     - name: Publish
       run: dotnet publish --no-build --no-self-contained --output ./wgconfig --configuration Release
     - name: Pack
