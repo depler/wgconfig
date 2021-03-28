@@ -29,6 +29,14 @@ jobs:
       run: |
         rm -f ./wgconfig/wgconfig ./wgconfig/*.deps.json ./wgconfig/*.pdb
         zip -r release.zip ./wgconfig/
-        
+    - name: Upload
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.dependencies.outputs.upload_url }}
+        asset_path: ./release.zip
+        asset_name: wgconfig.zip
+        asset_content_type: application/zip
         
     
