@@ -28,7 +28,6 @@ jobs:
     - name: Pack
       run: |
         mv ./bin/Release/net5.0/publish/ ./wgconfig/
-        rm -rf ./wgconfig/wgconfig/
         rm -f ./wgconfig/wgconfig
         rm -f ./wgconfig/*.deps.json
         rm -f ./wgconfig/*.pdb
