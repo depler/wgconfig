@@ -27,10 +27,10 @@ jobs:
       run: dotnet publish --no-build --no-self-contained --configuration Release
     - name: Pack
       run: |
+        mv ./bin/Release/net5.0/publish/ ./wgconfig/
         rm -rf ./wgconfig/wgconfig/
         rm -f ./wgconfig/wgconfig
         rm -f ./wgconfig/*.deps.json
         rm -f ./wgconfig/*.pdb
-        mv ./bin/Release/net5.0/publish/ ./wgconfig/
         zip -r release.zip ./wgconfig/
         
