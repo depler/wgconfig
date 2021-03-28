@@ -1,0 +1,38 @@
+name: .NET5.0 Build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+    - name: Bump versions
+      uses: SiqiLu/dotnet-bump-version@master
+      with:
+        version_files: "**/*.csproj"
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Publish
+      run: dotnet publish --no-build --no-self-contained --output ./wgconfig --configuration Release
+    - name: Pack
+      run: |
+        rm -f ./wgconfig/wgconfig ./wgconfig/*.deps.json ./wgconfig/*.pdb
+        zip -r release.zip ./wgconfig/
+
+    
