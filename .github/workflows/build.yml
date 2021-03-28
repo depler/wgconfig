@@ -26,6 +26,6 @@ jobs:
     - name: Publish
       run: dotnet publish --no-build --no-self-contained --configuration Release
     - name: Pack
-      run:
+      run: |
         mv ./bin/Release/net5.0/publish/ ./wgconfig/
         zip -r release.zip ./wgconfig/
