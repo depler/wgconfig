@@ -23,22 +23,17 @@ jobs:
       run: dotnet build --no-restore --configuration Release
     - name: Test
       run: dotnet test --no-build --verbosity normal
-    - name: Bump version
-      uses: SiqiLu/dotnet-bump-version@master
-      with:
-        version_files: wgconfig.csproj
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-    - name: Get version
-      id: get_version
-      uses: chiefnoir/gaction-version-getter@v1
-      with:
-        projectPath: wgconfig.csproj
     - name: Publish
       run: dotnet publish --no-build --no-self-contained --output ./wgconfig --configuration Release
     - name: Pack
       run: |
         rm -f ./wgconfig/wgconfig ./wgconfig/*.deps.json ./wgconfig/*.pdb
         zip -r release.zip ./wgconfig/
+    - name: Get version
+      id: get_version
+      uses: chiefnoir/gaction-version-getter@v1
+      with:
+        projectPath: wgconfig.csproj
     - name: Create release
       id: create_release
       uses: actions/create-release@v1
@@ -56,5 +51,10 @@ jobs:
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./release.zip
-        asset_name: wgconfig_${{ steps.get_version.outputs.projectVersion }}.zip
+        asset_name: wgconfig_v${{ steps.get_version.outputs.projectVersion }}.zip
         asset_content_type: application/zip	
+    - name: Bump version
+      uses: SiqiLu/dotnet-bump-version@master
+      with:
+        version_files: wgconfig.csproj
+        github_token: ${{ secrets.GITHUB_TOKEN }}
