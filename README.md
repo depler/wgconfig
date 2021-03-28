@@ -1,4 +1,4 @@
-![Build](https://github.com/depler/wgconfig/actions/workflows/dotnet.yml/badge.svg)
+![Build](https://github.com/depler/wgconfig/actions/workflows/build.yml/badge.svg)
 
 # wgconfig
 Program for generation wireguard config with multiple clients. Cross-platform binary (tested on Windows and Linux), dotnet 5.0 and wg binary required. 
