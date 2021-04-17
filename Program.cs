@@ -1,6 +1,8 @@
-﻿using System;
+﻿using QRCoder;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -46,6 +48,17 @@ namespace wgconfig
                 throw new Exception();
 
             return process.StandardOutput.ReadToEnd().Trim();
+        }
+
+        private static void GenerateQRCode(string text, string file)
+        {
+            using (var generator = new QRCodeGenerator())
+            using (var data = generator.CreateQrCode(text, QRCodeGenerator.ECCLevel.L))
+            using (var code = new QRCode(data))
+            using (var bitmap = code.GetGraphic(5))
+            {
+                bitmap.Save(file, ImageFormat.Png);
+            }
         }
 
         static KeyData GenerateKeys(string wgExe)
@@ -216,9 +229,14 @@ namespace wgconfig
 
                                 for (int j = 0; j < clientKeys.Length; j++)
                                 {
-                                    var configPath = Path.Combine(configFolder, $"client{j + 1:D3}.conf");
+                                    var configName = $"client{j + 1:D3}";
                                     var configData = GetClientConfig(clientKeys[j], serverKeys.PublicKey, serverIp, serverPort, subnet, j + 2);
+
+                                    var configPath = Path.Combine(configFolder, $"{configName}.conf");
                                     File.WriteAllText(configPath, configData, utf8);
+
+                                    var configQRPath = Path.Combine(configFolder, $"{configName}.png");
+                                    GenerateQRCode(configData, configQRPath);
                                 }
 
                                 var serverConfigPath = Path.Combine(configFolder, "server.conf");
