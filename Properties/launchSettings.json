@@ -2,7 +2,7 @@
   "profiles": {
     "wireguard": {
       "commandName": "Project",
-      "commandLineArgs": "--config 127.0.0.1 51820 5"
+      "commandLineArgs": "--config 127.0.0.1 51820 10.8.0.0 5"
     }
   }
 }
