@@ -11,4 +11,13 @@
     <Folder Include="QRCoder\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="run_config.bat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="run_config.sh">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

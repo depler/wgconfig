@@ -20,11 +20,11 @@ namespace QRCoder
             for (var i = 0; i < size; i++)
                 this.ModuleMatrix.Add(new BitArray(size));
         }
-#if NETFRAMEWORK || NETSTANDARD2_0
+
         public QRCodeData(string pathToRawData, Compression compressMode) : this(File.ReadAllBytes(pathToRawData), compressMode)
         {
         }
-#endif
+
         public QRCodeData(byte[] rawData, Compression compressMode)
         {
             var bytes = new List<byte>(rawData);
@@ -152,13 +152,10 @@ namespace QRCoder
             }
             return rawData;
         }
-
-#if NETFRAMEWORK || NETSTANDARD2_0
         public void SaveRawData(string filePath, Compression compressMode)
         {
             File.WriteAllBytes(filePath, GetRawData(compressMode));
         }
-#endif
 
         public int Version { get; private set; }
 
