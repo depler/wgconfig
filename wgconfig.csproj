@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="QRCoder" Version="1.4.1" />
+    <Folder Include="QRCoder\" />
   </ItemGroup>
 
 </Project>
