@@ -1,5 +1,6 @@
 ﻿using QRCoder;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing.Imaging;
@@ -33,7 +34,7 @@ namespace wgconfig
             {
                 RedirectStandardInput = true,
                 RedirectStandardOutput = true,
-                RedirectStandardError= true,
+                RedirectStandardError = true,
 
             });
 
@@ -128,7 +129,45 @@ namespace wgconfig
                 .Select(x => x.ToString()).OrderBy(x => x).ToArray();
 
             ipstotal1 = ips.Select(x => x + "/32").Aggregate((x, y) => x + "," + y);
-            ipstotal2 = ips.Select(x => $"route add {x} mask 255.255.255.255 10.8.0.1").Aggregate((x, y) => x + "\n" + y);
+            ipstotal2 = ips.Select(x => $"route add {x} mask 255.255.255.255 0.0.0.0").Aggregate((x, y) => x + "\n" + y);
+        }
+
+
+        static string GetSubnetMask(int bits)
+        {
+            if (bits > 32)
+                throw new Exception("32 bits maximum for IP");
+
+            var mask = new int[4];
+            int conter = 0;
+
+            for (int i = 0; i < 4; i++)
+                for (int j = 7; j >= 0; j--)
+                {
+                    if (++conter > bits)
+                        break;
+
+                    mask[i] |= 1 << j;
+                }
+
+            return $"{mask[0]}.{mask[1]}.{mask[2]}.{mask[3]}";
+        }
+
+        static string[] ConvertCIDR(string[] subnets)
+        {
+            var converted = new List<string>(subnets.Length);
+
+            foreach (var subnet in subnets)
+            {
+                var slash = subnet.LastIndexOf('/');
+                var ip = subnet.Substring(0, slash);
+                var bitsCount = int.Parse(subnet.Substring(++slash, subnet.Length - slash));
+                var mask = GetSubnetMask(bitsCount);
+
+                converted.Add($"route add {ip} mask {mask} 0.0.0.0");
+            }
+
+            return converted.ToArray();
         }
 
         static string SearchWireguard()
@@ -197,22 +236,38 @@ namespace wgconfig
                             }
                         case "--routes":
                             {
-                                if (!Directory.Exists(configFolder))
-                                    Directory.CreateDirectory(configFolder);
+                                Directory.CreateDirectory(configFolder);
+                                var fileName = args[++i];
 
                                 Console.WriteLine("Resolving dns...");
                                 var hosts = ReadConsoleInput().Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
                                 ResolveDns(hosts, out string ipstotal1, out string ipstotal2);
 
                                 Console.WriteLine("Saving resolved to files...");
-                                File.WriteAllText(Path.Combine(configFolder, "routes1.txt"), ipstotal1);
-                                File.WriteAllText(Path.Combine(configFolder, "routes2.txt"), ipstotal2);
+                                File.WriteAllText(Path.Combine(configFolder, $"mask_{fileName}.txt"), ipstotal1);
+                                File.WriteAllText(Path.Combine(configFolder, $"cidr_{fileName}.txt"), ipstotal2);
+
+                                Console.WriteLine("Done");
+                                break;
+                            }
+                        case "--cidr-convert":
+                            {
+                                Directory.CreateDirectory(configFolder);
+                                var fileName = args[++i];
+
+                                Console.WriteLine("Converting cidr subnets...");
+                                var cidrSubnets = ReadConsoleInput().Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                                var converted = ConvertCIDR(cidrSubnets);
+
+                                Console.WriteLine("Saving converted to file...");
+                                File.WriteAllLines(Path.Combine(configFolder, $"{fileName}.txt"), converted);
+
+                                Console.WriteLine("Done");
                                 break;
                             }
                         case "--config":
                             {
-                                if (!Directory.Exists(configFolder))
-                                    Directory.CreateDirectory(configFolder);
+                                Directory.CreateDirectory(configFolder);
 
                                 var serverIp = args[++i];
                                 var serverPort = args[++i];
@@ -242,6 +297,7 @@ namespace wgconfig
                                 var serverConfigData = GetServerConfig(serverKeys.PrivateKey, clientKeys, subnet, serverPort);
                                 File.WriteAllText(serverConfigPath, serverConfigData, utf8);
 
+                                Console.WriteLine("Done");
                                 break;
                             }
                         default: throw new Exception("Unknown argument: " + arg);
