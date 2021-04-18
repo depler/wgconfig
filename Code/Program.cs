@@ -121,15 +121,15 @@ namespace wgconfig
             return sb.ToString();
         }
 
-        static void ResolveDns(string[] hosts, out string ipstotal1, out string ipstotal2)
+        static void ResolveDns(string[] hosts, out string ips_cidr, out string ips_mask)
         {
             var ips = hosts
                 .Select(x => Dns.GetHostAddresses(x))
                 .SelectMany(x => x).Where(x => x.AddressFamily == AddressFamily.InterNetwork)
                 .Select(x => x.ToString()).OrderBy(x => x).ToArray();
 
-            ipstotal1 = ips.Select(x => x + "/32").Aggregate((x, y) => x + "," + y);
-            ipstotal2 = ips.Select(x => $"route add {x} mask 255.255.255.255 0.0.0.0").Aggregate((x, y) => x + "\n" + y);
+            ips_cidr = ips.Select(x => x + "/32").Aggregate((x, y) => x + "," + y);
+            ips_mask = ips.Select(x => $"route add {x} mask 255.255.255.255 0.0.0.0").Aggregate((x, y) => x + "\n" + y);
         }
 
 
@@ -241,11 +241,11 @@ namespace wgconfig
 
                                 Console.WriteLine("Resolving dns...");
                                 var hosts = ReadConsoleInput().Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-                                ResolveDns(hosts, out string ipstotal1, out string ipstotal2);
+                                ResolveDns(hosts, out string ips_cidr, out string ips_mask);
 
                                 Console.WriteLine("Saving resolved to files...");
-                                File.WriteAllText(Path.Combine(configFolder, $"mask_{fileName}.txt"), ipstotal1);
-                                File.WriteAllText(Path.Combine(configFolder, $"cidr_{fileName}.txt"), ipstotal2);
+                                File.WriteAllText(Path.Combine(configFolder, $"cidr_{fileName}.txt"), ips_cidr);
+                                File.WriteAllText(Path.Combine(configFolder, $"mask_{fileName}.txt"), ips_mask);
 
                                 Console.WriteLine("Done");
                                 break;
