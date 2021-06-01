@@ -112,6 +112,8 @@ namespace Wireguard.Code
 
         static void Main(string[] args)
         {
+            bool needQrCode = false;
+
             try
             {
                 var utf8 = new UTF8Encoding(false);
@@ -170,6 +172,12 @@ namespace Wireguard.Code
                                 Console.WriteLine("Done");
                                 break;
                             }
+                        case "--qrcode":
+                            {
+                                needQrCode = true;
+                                Console.WriteLine("Generating QR codes enabled");
+                                break;
+                            }
                         case "--config":
                             {
                                 Directory.CreateDirectory(configFolder);
@@ -194,8 +202,11 @@ namespace Wireguard.Code
                                     var configPath = Path.Combine(configFolder, $"{configName}.conf");
                                     File.WriteAllText(configPath, configData, utf8);
 
-                                    var configQRPath = Path.Combine(configFolder, $"{configName}.png");
-                                    Utils.GenerateQRCode(configData, configQRPath);
+                                    if (needQrCode)
+                                    {
+                                        var configQRPath = Path.Combine(configFolder, $"{configName}.png");
+                                        Utils.GenerateQRCode(configData, configQRPath);
+                                    }
                                 }
 
                                 var serverConfigPath = Path.Combine(configFolder, "server.conf");
