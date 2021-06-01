@@ -1,4 +1,5 @@
 ﻿using QRCoder;
+using System;
 using System.IO;
 
 namespace Wireguard.Code
@@ -12,6 +13,20 @@ namespace Wireguard.Code
             using var png = new PngByteQRCode(data);
 
             File.WriteAllBytes(file, png.GetGraphic(5));
+        }
+
+        public static string ReadConsoleInput()
+        {
+            using var stream = Console.OpenStandardInput();
+            using var reader = new StreamReader(stream);
+
+            return reader.ReadToEnd();
+        }
+
+        public static string[] ReadConsoleLines(bool removeEmpty)
+        {
+            var options = removeEmpty ? StringSplitOptions.RemoveEmptyEntries : StringSplitOptions.None;
+            return ReadConsoleInput().Split(new[] { '\r', '\n' }, options);
         }
     }
 }

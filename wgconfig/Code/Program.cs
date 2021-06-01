@@ -82,7 +82,6 @@ namespace Wireguard.Code
             ips_mask = ips.Select(x => $"route add {x} mask 255.255.255.255 0.0.0.0").Aggregate((x, y) => x + "\n" + y);
         }
 
-
         static string GetSubnetMask(int bits)
         {
             if (bits > 32)
@@ -120,41 +119,8 @@ namespace Wireguard.Code
             return converted.ToArray();
         }
 
-        static string SearchWireguard()
-        {
-            foreach (var file in new[]
-            {
-                @"c:\Program Files\WireGuard\wg.exe",
-                "/usr/bin/wg"
-            })
-            {
-                if (File.Exists(file))
-                    return file;
-            }
-
-            return null;
-        }
-
-        static string ReadConsoleInput()
-        {
-            using var stream = Console.OpenStandardInput();
-            using var reader = new StreamReader(stream);
-
-            return reader.ReadToEnd();
-        }
-
         static void Main(string[] args)
         {
-            var q = string.Join("\n", Enumerable.Range(0, 15).Select(x =>
-             {
-                 var k1 = Curve25519.GetPrivateKey();
-                 var k2 = Curve25519.GetPublicKey(k1);
-                 return $"{{ \"{k1}\", \"{k2}\" }}";
- 
-             }));
-
-
-
             try
             {
                 var utf8 = new UTF8Encoding(false);
@@ -188,7 +154,7 @@ namespace Wireguard.Code
                                 var fileName = args[++i];
 
                                 Console.WriteLine("Resolving dns...");
-                                var hosts = ReadConsoleInput().Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                                var hosts = Utils.ReadConsoleLines(true);
                                 ResolveDns(hosts, out string ips_cidr, out string ips_mask);
 
                                 Console.WriteLine("Saving resolved to files...");
@@ -204,7 +170,7 @@ namespace Wireguard.Code
                                 var fileName = args[++i];
 
                                 Console.WriteLine("Converting cidr subnets...");
-                                var cidrSubnets = ReadConsoleInput().Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                                var cidrSubnets = Utils.ReadConsoleLines(true);
                                 var converted = ConvertCIDR(cidrSubnets);
 
                                 Console.WriteLine("Saving converted to file...");
