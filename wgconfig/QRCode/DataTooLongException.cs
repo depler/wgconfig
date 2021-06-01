@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Wireguard.QR
+namespace Wireguard.QRCode
 {
     public class QrDataTooLongException : Exception
     {

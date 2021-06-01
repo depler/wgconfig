@@ -1,4 +1,4 @@
-﻿namespace Wireguard.QR
+﻿namespace Wireguard.QRCode
 {
     public abstract class AbstractQRCode
     {

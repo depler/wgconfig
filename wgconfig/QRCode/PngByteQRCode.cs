@@ -2,7 +2,7 @@
 using System.IO;
 using System.IO.Compression;
 
-namespace Wireguard.QR
+namespace Wireguard.QRCode
 {
     public sealed class PngByteQRCode : AbstractQRCode, IDisposable
     {

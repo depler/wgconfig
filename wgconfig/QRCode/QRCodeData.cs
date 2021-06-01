@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 
-namespace Wireguard.QR
+namespace Wireguard.QRCode
 {
     public class QRCodeData : IDisposable
     {

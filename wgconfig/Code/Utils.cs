@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using Wireguard.QR;
+using Wireguard.QRCode;
 
 namespace Wireguard.Code
 {

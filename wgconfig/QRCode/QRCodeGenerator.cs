@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Collections;
 
-namespace Wireguard.QR
+namespace Wireguard.QRCode
 {
     public class QRCodeGenerator : IDisposable
     {
