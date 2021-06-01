@@ -1,9 +1,8 @@
-﻿using QRCoder;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 
-namespace Wireguard.Code
+namespace Wireguard
 {
     public static class Utils
     {
@@ -31,13 +30,19 @@ namespace Wireguard.Code
             return process.StandardOutput.ReadToEnd().Trim();
         }
 
-        public static void GenerateQRCode(string text, string file)
+        public static string SearchWireguard()
         {
-            using var generator = new QRCodeGenerator();
-            using var data = generator.CreateQrCode(text, QRCodeGenerator.ECCLevel.L);
-            using var png = new PngByteQRCode(data);
+            foreach (var file in new[]
+            {
+                @"c:\Program Files\WireGuard\wg.exe",
+                "/usr/bin/wg"
+            })
+            {
+                if (File.Exists(file))
+                    return file;
+            }
 
-            File.WriteAllBytes(file, png.GetGraphic(5));
+            return null;
         }
     }
 }

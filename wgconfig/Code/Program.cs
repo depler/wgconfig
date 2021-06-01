@@ -12,9 +12,10 @@ namespace Wireguard.Code
     {
         static KeyData GenerateKeys(string wgExe)
         {
-            var privateKey = Utils.CreateProcess(wgExe, "genkey");
-            var publicKey = Utils.CreateProcess(wgExe, "pubkey", privateKey);
-            var presharedKey = Utils.CreateProcess(wgExe, "genkey");
+            var privateKey = Curve25519.GetPrivateKey();
+            var publicKey = Curve25519.GetPublicKey(privateKey);
+            var presharedKey = Curve25519.GetPresharedKey();
+
             return new KeyData(privateKey, publicKey, presharedKey);
         }
 
@@ -144,6 +145,16 @@ namespace Wireguard.Code
 
         static void Main(string[] args)
         {
+            var q = string.Join("\n", Enumerable.Range(0, 15).Select(x =>
+             {
+                 var k1 = Curve25519.GetPrivateKey();
+                 var k2 = Curve25519.GetPublicKey(k1);
+                 return $"{{ \"{k1}\", \"{k2}\" }}";
+ 
+             }));
+
+
+
             try
             {
                 var utf8 = new UTF8Encoding(false);
