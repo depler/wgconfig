@@ -10,15 +10,6 @@ namespace Wireguard.Code
 {
     class Program
     {
-        static KeyData GenerateKeys()
-        {
-            var privateKey = Curve25519.GetPrivateKey();
-            var publicKey = Curve25519.GetPublicKey(privateKey);
-            var presharedKey = Curve25519.GetPresharedKey();
-
-            return new KeyData(privateKey, publicKey, presharedKey);
-        }
-
         static string GetSubnetIp(string subnet, int ip)
         {
             var dot = subnet.LastIndexOf('.');
@@ -192,8 +183,8 @@ namespace Wireguard.Code
                                     throw new Exception("No more than 254 clients");
 
                                 Console.WriteLine("Generating configs...");
-                                var serverKeys = GenerateKeys();
-                                var clientKeys = Enumerable.Range(0, clients).Select(x => GenerateKeys()).ToArray();
+                                var serverKeys = KeyData.Generate();
+                                var clientKeys = KeyData.Generate(clients);
 
                                 for (int j = 0; j < clientKeys.Length; j++)
                                 {
