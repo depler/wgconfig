@@ -1,7 +1,5 @@
-![Build](https://github.com/depler/wgconfig/actions/workflows/build.yml/badge.svg)
-
 # wgconfig
-Generation wireguard config files for multiple clients (with QR images). Cross-platform binary (tested on Windows and Linux), dotnet 5.0 and wg binary required.
+Generation wireguard config files for multiple clients (with QR images). Cross-platform .NET 5.0 binary without dependencies (wireguard is not required).
 
 ## Usage
 dotnet wgconfig.dll --config <server_ip> <server_port> <subnet> <clients_count>
