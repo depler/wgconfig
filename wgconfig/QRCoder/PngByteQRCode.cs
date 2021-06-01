@@ -1,9 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.IO.Compression;
-using static QRCoder.QRCodeGenerator;
 
-namespace QRCoder
+namespace Wireguard.QR
 {
     public sealed class PngByteQRCode : AbstractQRCode, IDisposable
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Collections;
 
-namespace QRCoder
+namespace Wireguard.QR
 {
     public class QRCodeGenerator : IDisposable
     {
@@ -91,7 +91,7 @@ namespace QRCoder
                 if (minVersion > version)
                 {
                     var maxSizeByte = capacityTable[version - 1].Details.First(x => x.ErrorCorrectionLevel == eccLevel).CapacityDict[encoding];
-                    throw new QRCoder.Exceptions.DataTooLongException(eccLevel.ToString(), encoding.ToString(), version, maxSizeByte);
+                    throw new QrDataTooLongException(eccLevel.ToString(), encoding.ToString(), version, maxSizeByte);
                 }                    
             }
 
@@ -838,7 +838,7 @@ namespace QRCoder
                 x => x.Details.Any(
                     y => (y.ErrorCorrectionLevel == eccLevel))
                 ).Max(x => x.Details.Single(y => y.ErrorCorrectionLevel == eccLevel).CapacityDict[encMode]);
-            throw new QRCoder.Exceptions.DataTooLongException(eccLevel.ToString(), encMode.ToString(), maxSizeByte);
+            throw new QrDataTooLongException(eccLevel.ToString(), encMode.ToString(), maxSizeByte);
         }
 
         private static EncodingMode GetEncodingFromPlaintext(string plainText, bool forceUtf8)

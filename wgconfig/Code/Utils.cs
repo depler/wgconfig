@@ -1,6 +1,6 @@
-﻿using QRCoder;
-using System;
+﻿using System;
 using System.IO;
+using Wireguard.QR;
 
 namespace Wireguard.Code
 {
