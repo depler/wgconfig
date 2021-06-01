@@ -326,8 +326,6 @@ namespace QRCoder
             using (var qrCode = new PngByteQRCode(qrCodeData))
                 return qrCode.GetGraphic(pixelsPerModule, darkColorRgba, lightColorRgba);
         }
-    
-
 
         public static byte[] GetQRCode(string txt, QRCodeGenerator.ECCLevel eccLevel, int size)
         {

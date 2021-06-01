@@ -1,71 +1,20 @@
-﻿using QRCoder;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-namespace wgconfig
+namespace Wireguard.Code
 {
-    public class KeyData
-    {
-        public string PrivateKey;
-        public string PublicKey;
-        public string PresharedKey;
-
-        public KeyData(string privateKey, string publicKey, string presharedKey)
-        {
-            PrivateKey = privateKey;
-            PublicKey = publicKey;
-            PresharedKey = presharedKey;
-        }
-    }
-
     class Program
     {
-        static string CreateProcess(string file, string args, string stdin = null)
-        {
-            var process = Process.Start(new ProcessStartInfo(file, args)
-            {
-                RedirectStandardInput = true,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-
-            });
-
-            if (!string.IsNullOrEmpty(stdin))
-            {
-                process.StandardInput.Write(stdin);
-                process.StandardInput.Close();
-            }
-
-            process.WaitForExit();
-            if (process.ExitCode != 0)
-                throw new Exception();
-
-            return process.StandardOutput.ReadToEnd().Trim();
-        }
-
-        private static void GenerateQRCode(string text, string file)
-        {
-            using (var generator = new QRCodeGenerator())
-            using (var data = generator.CreateQrCode(text, QRCodeGenerator.ECCLevel.L))
-            using (var png = new PngByteQRCode(data))
-            {
-                File.WriteAllBytes(file, png.GetGraphic(5));
-            }
-        }
-
         static KeyData GenerateKeys(string wgExe)
         {
-            var privateKey = CreateProcess(wgExe, "genkey");
-            var publicKey = CreateProcess(wgExe, "pubkey", privateKey);
-            var presharedKey = CreateProcess(wgExe, "genkey");
+            var privateKey = Utils.CreateProcess(wgExe, "genkey");
+            var publicKey = Utils.CreateProcess(wgExe, "pubkey", privateKey);
+            var presharedKey = Utils.CreateProcess(wgExe, "genkey");
             return new KeyData(privateKey, publicKey, presharedKey);
         }
 
@@ -187,11 +136,10 @@ namespace wgconfig
 
         static string ReadConsoleInput()
         {
-            using (var stream = Console.OpenStandardInput())
-            using (var reader = new StreamReader(stream))
-            {
-                return reader.ReadToEnd();
-            }
+            using var stream = Console.OpenStandardInput();
+            using var reader = new StreamReader(stream);
+
+            return reader.ReadToEnd();
         }
 
         static void Main(string[] args)
@@ -290,7 +238,7 @@ namespace wgconfig
                                     File.WriteAllText(configPath, configData, utf8);
 
                                     var configQRPath = Path.Combine(configFolder, $"{configName}.png");
-                                    GenerateQRCode(configData, configQRPath);
+                                    Utils.GenerateQRCode(configData, configQRPath);
                                 }
 
                                 var serverConfigPath = Path.Combine(configFolder, "server.conf");
