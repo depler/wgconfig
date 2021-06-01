@@ -3,9 +3,9 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
-    <AssemblyVersion>1.0.0.18</AssemblyVersion>
-    <FileVersion>1.0.0.18</FileVersion>
-    <RootNamespace>Wireguard</RootNamespace>
+	  <AssemblyVersion>1.0.0.19</AssemblyVersion>
+	  <FileVersion>1.0.0.19</FileVersion>
+	  <RootNamespace>Wireguard</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
