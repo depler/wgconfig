@@ -4,6 +4,7 @@ Generation wireguard config files for multiple clients. Features:
 - Cross-platform .NET 5.0 binary
 - Zero dependencies (no external libs, wireguard is not required)
 - Optional QR code generation for each client
+- Up to 254 clients total
 
 ## Usage
 dotnet wgconfig.dll --config <server_ip> <server_port> <subnet> <clients_count>
