@@ -10,7 +10,7 @@ namespace Wireguard.Code
 {
     class Program
     {
-        static KeyData GenerateKeys(string wgExe)
+        static KeyData GenerateKeys()
         {
             var privateKey = Curve25519.GetPrivateKey();
             var publicKey = Curve25519.GetPublicKey(privateKey);
@@ -159,9 +159,6 @@ namespace Wireguard.Code
             {
                 var utf8 = new UTF8Encoding(false);
 
-                var wgExe = SearchWireguard();
-                Console.WriteLine("Wireguard path: " + wgExe);
-
                 var configFolder = Path.Combine(Directory.GetCurrentDirectory(), "config");
                 Console.WriteLine("Config folder: " + configFolder);
 
@@ -169,8 +166,6 @@ namespace Wireguard.Code
                 {
                     Console.WriteLine("Usage:");
                     Console.WriteLine("--config <server_ip> <server_port> <subnet> <clients_count>: generate wg config");
-                    Console.WriteLine("--routes <stdin>: resolve hosts to IPs");
-                    Console.WriteLine("--wg <wg path override>");
                     Console.WriteLine("--folder <config folder override>");
                     return;
                 }
@@ -181,12 +176,6 @@ namespace Wireguard.Code
 
                     switch (arg)
                     {
-                        case "--wg":
-                            {
-                                wgExe = args[++i];
-                                Console.WriteLine("Wireguard path override: " + wgExe);
-                                break;
-                            }
                         case "--folder":
                             {
                                 configFolder = args[++i];
@@ -237,8 +226,8 @@ namespace Wireguard.Code
                                     throw new Exception("No more than 254 clients");
 
                                 Console.WriteLine("Generating configs...");
-                                var serverKeys = GenerateKeys(wgExe);
-                                var clientKeys = Enumerable.Range(0, clients).Select(x => GenerateKeys(wgExe)).ToArray();
+                                var serverKeys = GenerateKeys();
+                                var clientKeys = Enumerable.Range(0, clients).Select(x => GenerateKeys()).ToArray();
 
                                 for (int j = 0; j < clientKeys.Length; j++)
                                 {
