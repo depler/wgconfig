@@ -9,14 +9,16 @@ namespace Net.Codecrete.QrCodeGenerator
         QrCode qrCode;
         int scale;
         int border;
-        int size;
+        int realSize;
+        int scaledSize;
 
         public QrCodePng(QrCode qrCode, int scale, int border)
         {
             this.qrCode = qrCode;
             this.scale = scale;
             this.border = border;
-            this.size = (qrCode.Size + border * 2) * scale;
+            this.realSize = qrCode.Size + border * 2;
+            this.scaledSize = realSize * scale;
         }
 
         public byte[] GetBytes()
@@ -25,7 +27,7 @@ namespace Net.Codecrete.QrCodeGenerator
             {
                 var data = Draw();
 
-                png.WriteHeader(size, size, 1, 0);
+                png.WriteHeader(scaledSize, scaledSize, 1, 0);
                 png.WriteData(data);
                 png.WriteEnd();
 
@@ -35,20 +37,31 @@ namespace Net.Codecrete.QrCodeGenerator
 
         private byte[] Draw()
         {
-            int bytesPerLine = (size + 7) / 8 + 1;
-            var data = new byte[bytesPerLine * size];
+            int bytesPerLine = (scaledSize + 7) / 8 + 1;
+            var data = new byte[bytesPerLine * scaledSize];
 
-            for (int y = 0; y < size; y++)
-                for (int x = 0; x < size; x++)
+            for (int y = 0; y < realSize; y++)
+            {
+                int offset = y * bytesPerLine * scale;
+
+                for (int x = 0; x < realSize; x++)
                 {
-                    if (qrCode.GetModule(x / scale - border, y /scale - border))
+                    if (qrCode.GetModule(x - border, y - border))
                         continue;
 
-                    int offset = y * bytesPerLine;
-                    int index = offset + x / 8 + 1;
+                    int pos = x * scale;
+                    int end = pos + scale;
 
-                    data[index] |= (byte)(0x80 >> x % 8);
+                    for (; pos < end; pos++)
+                    {
+                        int index = offset + pos / 8 + 1;
+                        data[index] |= (byte)(0x80 >> pos % 8);
+                    }
                 }
+
+                for (var i = 1; i < scale; i++)
+                    Array.Copy(data, offset, data, offset + i * bytesPerLine, bytesPerLine);
+            }
 
             return data;
         }
