@@ -1,18 +1,18 @@
-﻿using System;
+﻿using Net.Codecrete.QrCodeGenerator;
+using System;
 using System.IO;
-using Wireguard.QRCode;
+using System.Text;
 
 namespace Wireguard.Code
 {
     public static class Utils
     {
-        public static void GenerateQRCode(string text, string file)
+        public static void GenerateQrCode(string text, string file)
         {
-            using var generator = new QRCodeGenerator();
-            using var data = generator.CreateQrCode(text, QRCodeGenerator.ECCLevel.L);
-            using var png = new PngByteQRCode(data);
+            var qrCode =  QrCode.EncodeBinary(Encoding.UTF8.GetBytes(text), QrCode.Ecc.Low);
+            var qrCodePng = new QrCodePng(qrCode, 5, 5);
 
-            File.WriteAllBytes(file, png.GetGraphic(5));
+            File.WriteAllBytes(file, qrCodePng.GetBytes());
         }
 
         public static string ReadConsoleInput()

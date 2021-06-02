@@ -14,10 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="QRCode\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="run_config.bat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -205,7 +205,7 @@ namespace Wireguard.Code
                                     if (needQrCode)
                                     {
                                         var configQRPath = Path.Combine(configFolder, $"{configName}.png");
-                                        Utils.GenerateQRCode(configData, configQRPath);
+                                        Utils.GenerateQrCode(configData, configQRPath);
                                     }
                                 }
 
