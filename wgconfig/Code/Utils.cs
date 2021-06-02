@@ -1,5 +1,6 @@
 ﻿using Net.Codecrete.QrCodeGenerator;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -9,7 +10,8 @@ namespace Wireguard.Code
     {
         public static void GenerateQrCode(string text, string file)
         {
-            var qrCode =  QrCode.EncodeBinary(Encoding.UTF8.GetBytes(text), QrCode.Ecc.Low);
+            var qrSegment = QrSegment.MakeBytes(Encoding.UTF8.GetBytes(text));
+            var qrCode =  QrCode.EncodeSegments(new List<QrSegment>() { qrSegment }, QrCode.Ecc.Low, 10, 40, 0, false);
             var qrCodePng = new QrCodePng(qrCode, 5, 5);
 
             File.WriteAllBytes(file, qrCodePng.GetBytes());
