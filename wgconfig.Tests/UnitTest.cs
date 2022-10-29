@@ -2,7 +2,6 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.IO;
 using Wireguard.Code;
-using KVPS = System.Collections.Generic.KeyValuePair<string, string>;
 
 namespace Wireguard
 {
@@ -50,7 +49,7 @@ namespace Wireguard
         [Test]
         public void TestExternal()
         {
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 1000; i++)
             {
                 var privateKey = (i % 2 == 0) ? Utils.CreateProcess(wg, "genkey") : Curve25519.GetPrivateKey();
                 var publicKey1 = Utils.CreateProcess(wg, "pubkey", privateKey);
