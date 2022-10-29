@@ -24,7 +24,7 @@ namespace Wireguard.Code
             sb.AppendLine("[Interface]");
             sb.AppendLine($"PrivateKey = {clientKey.PrivateKey}");
             sb.AppendLine($"Address = {GetSubnetIp(subnet, ip++)}/24");
-            sb.AppendLine("DNS = 94.140.14.14,94.140.15.15");
+            sb.AppendLine("DNS = 1.1.1.1,1.0.0.1");
             sb.AppendLine(string.Empty);
             sb.AppendLine("[Peer]");
             sb.AppendLine($"PublicKey = {serverKey}");
@@ -44,8 +44,8 @@ namespace Wireguard.Code
             sb.AppendLine($"PrivateKey = {privateKey}");
             sb.AppendLine($"Address = {GetSubnetIp(subnet, 1)}/24");
             sb.AppendLine($"ListenPort = {port}");
-            sb.AppendLine("PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE");
-            sb.AppendLine("PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE");
+            sb.AppendLine("PostUp = iptables -A FORWARD -i wg0 -j ACCEPT; iptables -t nat -A POSTROUTING -o ens3 -j MASQUERADE");
+            sb.AppendLine("PostDown = iptables -D FORWARD -i wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -o ens3 -j MASQUERADE");
 
             int ip = 2;
             for (int i = 0; i < clientKeys.Length; i++)
