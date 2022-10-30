@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
 using System.Text;
 
 namespace Wireguard.Code
@@ -62,60 +58,11 @@ namespace Wireguard.Code
             return sb.ToString();
         }
 
-        static void ResolveDns(string[] hosts, out string ips_cidr, out string ips_mask)
-        {
-            var ips = hosts
-                .Select(x => Dns.GetHostAddresses(x))
-                .SelectMany(x => x).Where(x => x.AddressFamily == AddressFamily.InterNetwork)
-                .Select(x => x.ToString()).OrderBy(x => x).ToArray();
-
-            ips_cidr = ips.Select(x => x + "/32").Aggregate((x, y) => x + "," + y);
-            ips_mask = ips.Select(x => $"route add {x} mask 255.255.255.255 0.0.0.0").Aggregate((x, y) => x + "\n" + y);
-        }
-
-        static string GetSubnetMask(int bits)
-        {
-            if (bits > 32)
-                throw new Exception("32 bits maximum for IP");
-
-            var mask = new int[4];
-            int conter = 0;
-
-            for (int i = 0; i < 4; i++)
-                for (int j = 7; j >= 0; j--)
-                {
-                    if (++conter > bits)
-                        break;
-
-                    mask[i] |= 1 << j;
-                }
-
-            return $"{mask[0]}.{mask[1]}.{mask[2]}.{mask[3]}";
-        }
-
-        static string[] ConvertCIDR(string[] subnets)
-        {
-            var converted = new List<string>(subnets.Length);
-
-            foreach (var subnet in subnets)
-            {
-                var slash = subnet.LastIndexOf('/');
-                var ip = subnet.Substring(0, slash);
-                var bitsCount = int.Parse(subnet.Substring(++slash, subnet.Length - slash));
-                var mask = GetSubnetMask(bitsCount);
-
-                converted.Add($"route add {ip} mask {mask} 0.0.0.0");
-            }
-
-            return converted.ToArray();
-        }
-
         static void Main(string[] args)
         {
-            bool needQrCode = false;
-
             try
             {
+                bool needQrCode = false;
                 var utf8 = new UTF8Encoding(false);
 
                 var configFolder = Path.Combine(Directory.GetCurrentDirectory(), "config");
@@ -139,37 +86,6 @@ namespace Wireguard.Code
                             {
                                 configFolder = args[++i];
                                 Console.WriteLine("configFolder folder override: " + configFolder);
-                                break;
-                            }
-                        case "--routes":
-                            {
-                                Directory.CreateDirectory(configFolder);
-                                var fileName = args[++i];
-
-                                Console.WriteLine("Resolving dns...");
-                                var hosts = Utils.ReadConsoleLines(true);
-                                ResolveDns(hosts, out string ips_cidr, out string ips_mask);
-
-                                Console.WriteLine("Saving resolved to files...");
-                                File.WriteAllText(Path.Combine(configFolder, $"cidr_{fileName}.txt"), ips_cidr);
-                                File.WriteAllText(Path.Combine(configFolder, $"mask_{fileName}.txt"), ips_mask);
-
-                                Console.WriteLine("Done");
-                                break;
-                            }
-                        case "--cidr-convert":
-                            {
-                                Directory.CreateDirectory(configFolder);
-                                var fileName = args[++i];
-
-                                Console.WriteLine("Converting cidr subnets...");
-                                var cidrSubnets = Utils.ReadConsoleLines(true);
-                                var converted = ConvertCIDR(cidrSubnets);
-
-                                Console.WriteLine("Saving converted to file...");
-                                File.WriteAllLines(Path.Combine(configFolder, $"{fileName}.txt"), converted);
-
-                                Console.WriteLine("Done");
                                 break;
                             }
                         case "--qrcode":
