@@ -76,12 +76,13 @@ public static class QrSegmentAdvanced
         }
 
         // Iterate through version numbers, and make tentative segments
-        List<QrSegment> segs = null;
+        List<QrSegment>? segs = null;
         var codePoints = ToCodePoints(text);
         for (int version = minVersion; ; version++)
         {
             if (version == minVersion || version == 10 || version == 27)
                 segs = MakeSegmentsOptimally(codePoints, version);
+
             Debug.Assert(segs != null);
 
             // Check if the segments fit
@@ -96,6 +97,7 @@ public static class QrSegmentAdvanced
             var msg = "Segment too long";
             if (dataUsedBits != -1)
                 msg = $"Data length = {dataUsedBits} bits, Max capacity = {dataCapacityBits} bits";
+
             throw new ArgumentException(msg);
         }
     }
@@ -189,10 +191,12 @@ public static class QrSegmentAdvanced
         }
 
         // Find optimal ending mode
-        Mode curMode = null;
+        Mode? curMode = null;
         for (int i = 0, minCost = 0; i < numModes; i++)
         {
-            if (curMode != null && prevCosts[i] >= minCost) continue;
+            if (curMode != null && prevCosts[i] >= minCost)
+                continue;
+
             minCost = prevCosts[i];
             curMode = modeTypes[i];
         }

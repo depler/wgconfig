@@ -6,6 +6,7 @@
 	  <AssemblyVersion>1.0.0.0</AssemblyVersion>
 	  <FileVersion>1.0.0.0</FileVersion>
 	  <RootNamespace>Wireguard</RootNamespace>
+	  <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

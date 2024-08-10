@@ -81,12 +81,11 @@ public class QrCodePng
         private static readonly byte[] IDAT = { 73, 68, 65, 84 };
         private static readonly byte[] IEND = { 73, 69, 78, 68 };
 
-        private MemoryStream stream = new MemoryStream();
+        private MemoryStream stream = new();
 
         public void Dispose()
         {
-            stream?.Dispose();
-            stream = null;
+            stream.Dispose();
         }
 
         public byte[] GetBytes()

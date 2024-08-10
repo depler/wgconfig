@@ -327,7 +327,7 @@ public class QrCode
         byte[] allCodewords = AddEccAndInterleave(dataCodewords);
         DrawCodewords(allCodewords);
         Mask = HandleConstructorMasking(mask);
-        _isFunction = null;
+        _isFunction = [];
     }
 
 
