@@ -468,10 +468,9 @@ namespace Wireguard.Code
 
         private static byte[] GetRandomBytes()
         {
-            using var rng = new RNGCryptoServiceProvider();
-
             var data = new byte[KeySize];
-            rng.GetBytes(data);
+
+            RandomNumberGenerator.Fill(data);
 
             return data;
         }
